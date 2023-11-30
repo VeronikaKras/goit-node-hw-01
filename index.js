@@ -10,7 +10,7 @@ const { listContacts, getContactById, removeContact, addContact } = contactsModu
 (async () => {
   try {
     const allContacts = await listContacts();
-    console.log('All Contacts:', allContacts);
+    console.table('All Contacts:', allContacts);
 
     const contactById = await getContactById('098HjKioK87');
     console.log('Contact by ID:', contactById);
@@ -18,7 +18,7 @@ const { listContacts, getContactById, removeContact, addContact } = contactsModu
     const newContact = await addContact('Bill Bon', 'bon@example.com', '12344321');
     console.log('New Contact:', newContact);
 
-    const removedContact = await removeContact('098HjKioK87');
+    const removedContact = await removeContact('any-id');
     console.log('Removed Contact:', removedContact);
   } catch (error) {
     console.error('Error:', error.message);
