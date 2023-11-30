@@ -1,62 +1,56 @@
 const fs = require('fs/promises');
 const path = require('path');
+const argv = require('yargs').argv;
 
-const contactsPath = path.join(__dirname, 'contacts.json');
 
-const impModule = require('./contacts');
+const contactsModule = require('./contacts');
 
-async function listContacts() {
+const { listContacts, getContactById, removeContact, addContact } = contactsModule;
+
+(async () => {
   try {
-    const data = await fs.readFile(contactsPath, 'utf-8');
-    const contacts = JSON.parse(data);
-    return contacts;
+    const allContacts = await listContacts();
+    console.log('All Contacts:', allContacts);
+
+    const contactById = await getContactById('098HjKioK87');
+    console.log('Contact by ID:', contactById);
+
+    const newContact = await addContact('Bill Bon', 'bon@example.com', '12344321');
+    console.log('New Contact:', newContact);
+
+    const removedContact = await removeContact('098HjKioK87');
+    console.log('Removed Contact:', removedContact);
   } catch (error) {
-    console.error('Error reading contacts:', error.message);
-    return [];
+    console.error('Error:', error.message);
+  }
+})();
+
+
+
+
+function invokeAction({ action, id, name, email, phone }) {
+  const { listContacts, getContactById, removeContact, addContact } = contactsModule;
+
+  switch (action) {
+    case 'list':
+      listContacts().then((contacts) => console.log('All Contacts:', contacts));
+      break;
+
+    case 'get':
+      getContactById(id).then((contact) => console.log('Contact by ID:', contact));
+      break;
+
+    case 'add':
+      addContact(name, email, phone).then((newContact) => console.log('New Contact:', newContact));
+      break;
+
+    case 'remove':
+      removeContact(id).then((removedContact) => console.log('Removed Contact:', removedContact));
+      break;
+
+    default:
+      console.warn('\x1B[31m Unknown action type!');
   }
 }
 
-async function getContactById(contactId) {
-  const contacts = await listContacts();
-  const contact = contacts.find((c) => c.id === contactId);
-  return contact || null;
-}
-
-async function removeContact(contactId) {
-  const contacts = await listContacts();
-  const index = contacts.findIndex((c) => c.id === contactId);
-
-  if (index === -1) {
-    return null; 
-  }
-
-  const removedContact = contacts.splice(index, 1)[0];
-
-  try {
-    await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-    return removedContact;
-  } catch (error) {
-    console.error('Error writing contacts:', error.message);
-    return null;
-  }
-}
-
-async function addContact(name, email, phone) {
-  const newContact = { id: Date.now().toString(), name, email, phone };
-  const contacts = await listContacts();
-  contacts.push(newContact);
-
-  try {
-    await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-    return newContact;
-  } catch (error) {
-    console.error('Error writing contacts:', error.message);
-    return null;
-  }
-}
-
-
-listContacts();
-getContactById(contactId);
-removeContact(contactId);
-addContact(name, email, phone);
+invokeAction(argv);
