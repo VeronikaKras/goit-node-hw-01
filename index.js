@@ -5,27 +5,6 @@ const argv = require('yargs').argv;
 
 const contactsModule = require('./contacts');
 
-const { listContacts, getContactById, removeContact, addContact } = contactsModule;
-
-(async () => {
-  try {
-    const allContacts = await listContacts();
-    console.table('All Contacts:', allContacts);
-
-    const contactById = await getContactById('any-id');
-    console.log('Contact by ID:', contactById);
-
-    const newContact = await addContact('Bill Bon', 'bon@example.com', '12344321');
-    console.log('New Contact:', newContact);
-
-    const removedContact = await removeContact('any-id');
-    console.log('Removed Contact:', removedContact);
-  } catch (error) {
-    console.error('Error:', error.message);
-  }
-})();
-
-
 
 
 function invokeAction({ action, id, name, email, phone }) {
@@ -33,7 +12,7 @@ function invokeAction({ action, id, name, email, phone }) {
 
   switch (action) {
     case 'list':
-      listContacts().then((contacts) => console.log('All Contacts:', contacts));
+      listContacts().then((contacts) => console.table(contacts));
       break;
 
     case 'get':
