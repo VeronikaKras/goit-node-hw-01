@@ -12,7 +12,7 @@ const { listContacts, getContactById, removeContact, addContact } = contactsModu
     const allContacts = await listContacts();
     console.table('All Contacts:', allContacts);
 
-    const contactById = await getContactById('098HjKioK87');
+    const contactById = await getContactById('any-id');
     console.log('Contact by ID:', contactById);
 
     const newContact = await addContact('Bill Bon', 'bon@example.com', '12344321');
